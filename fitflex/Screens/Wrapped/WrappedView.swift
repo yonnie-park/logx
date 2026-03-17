@@ -15,10 +15,14 @@ struct WrappedView: View {
         workouts.filter { $0.hasRoute }
     }
     
+    private static let monthFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM"
+        return f
+    }()
+
     private func monthName() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        return formatter.string(from: month).lowercased()
+        Self.monthFormatter.string(from: month).lowercased()
     }
     
     

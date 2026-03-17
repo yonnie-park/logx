@@ -22,22 +22,30 @@ class HealthKitManager {
 
     func requestAuthorization() async {
         guard HKHealthStore.isHealthDataAvailable() else {
+            #if DEBUG
             print("❌ HealthKit 사용 불가")
+            #endif
             return
         }
         do {
             try await store.requestAuthorization(toShare: [], read: readTypes)
             isAuthorized = true
+            #if DEBUG
             print("✅ HealthKit 권한 획득")
+            #endif
             await fetchWorkouts()
         } catch {
+            #if DEBUG
             print("❌ HealthKit 권한 에러: \(error)")
+            #endif
         }
     }
 
     func fetchWorkouts() async {
         isLoading = true
+        #if DEBUG
         print("🏃 fetchWorkouts 시작")
+        #endif
 
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let query = HKSampleQuery(
@@ -51,30 +59,38 @@ class HealthKitManager {
             Task.detached(priority: .background) { [weak self] in
                 guard let self else { return }
 
-                // 기본 정보만 빠르게 로드 (HR, route 제외)
-                var result: [WorkoutModel] = []
-                for hkWorkout in hkWorkouts {
-                    let activeKcal = await self.fetchActiveKcal(for: hkWorkout)
-                    let totalKcal = await self.fetchTotalKcal(for: hkWorkout)
-
-                    let model = WorkoutModel(
-                        id: hkWorkout.uuid,
-                        type: hkWorkout.workoutActivityType.name,
-                        date: hkWorkout.startDate,
-                        duration: hkWorkout.duration,
-                        activeKcal: activeKcal,
-                        totalKcal: totalKcal,
-                        distance: hkWorkout.totalDistance?.doubleValue(for: .meter()),
-                        heartRateSamples: [], // 나중에 로드
-                        routeCoordinates: []  // 나중에 로드
-                    )
-                    result.append(model)
+                // 기본 정보만 빠르게 로드 (HR, route 제외) — 병렬 fetch
+                let result = await withTaskGroup(of: WorkoutModel.self, returning: [WorkoutModel].self) { group in
+                    for hkWorkout in hkWorkouts {
+                        group.addTask {
+                            let activeKcal = await self.fetchActiveKcal(for: hkWorkout)
+                            let totalKcal = await self.fetchTotalKcal(for: hkWorkout)
+                            return WorkoutModel(
+                                id: hkWorkout.uuid,
+                                type: hkWorkout.workoutActivityType.name,
+                                date: hkWorkout.startDate,
+                                duration: hkWorkout.duration,
+                                activeKcal: activeKcal,
+                                totalKcal: totalKcal,
+                                distance: hkWorkout.totalDistance?.doubleValue(for: .meter()),
+                                heartRateSamples: [],
+                                routeCoordinates: []
+                            )
+                        }
+                    }
+                    var models: [WorkoutModel] = []
+                    for await model in group {
+                        models.append(model)
+                    }
+                    return models.sorted { $0.date > $1.date }
                 }
 
                 await MainActor.run {
                     self.workouts = result
                     self.isLoading = false
+                    #if DEBUG
                     print("✅ 최종 모델 수: \(result.count)")
+                    #endif
                 }
             }
         }
@@ -208,10 +224,14 @@ class HealthKitManager {
                 for: .workoutType(),
                 frequency: .immediate
             )
+            #if DEBUG
             print("✅ Background delivery 활성화")
+            #endif
             setupObserverQuery()
         } catch {
+            #if DEBUG
             print("❌ Background delivery 에러: \(error)")
+            #endif
         }
     }
 

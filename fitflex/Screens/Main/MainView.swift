@@ -109,7 +109,7 @@ struct MainView: View {
                         .font(.system(size: 14))
                         .foregroundColor(.fitMuted)
                 } else {
-                    VStack(spacing: 10) {
+                    LazyVStack(spacing: 10) {
                         ForEach(workouts) { workout in
                             RecentWorkoutRow(workout: workout)
                         }
@@ -137,10 +137,14 @@ struct MainView: View {
 struct WrappedMonthChip: View {
     let month: Date
 
+    private static let monthFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM yyyy"
+        return f
+    }()
+
     private var monthLabel: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM yyyy"
-        return formatter.string(from: month).uppercased()
+        Self.monthFormatter.string(from: month).uppercased()
     }
 
     var body: some View {

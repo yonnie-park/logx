@@ -24,10 +24,14 @@ struct WorkoutModel: Identifiable {
         return routeTypes.contains(type.lowercased()) && !routeCoordinates.isEmpty
     }
 
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy/MM/dd"
+        return f
+    }()
+
     var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter.string(from: date)
+        Self.dateFormatter.string(from: date)
     }
 
     var formattedDuration: String {

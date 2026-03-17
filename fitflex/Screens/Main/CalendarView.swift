@@ -102,8 +102,10 @@ struct CalendarView: View {
             components.day = 1
             let firstDay = calendar.date(from: components)!
             let weekday = calendar.component(.weekday, from: firstDay)
+            #if DEBUG
             print("현재 달 1일 weekday: \(weekday), offset: \(weekday - 1)")
             print("현재 달: \(monthLabel())")
+            #endif
         }
     }
 
@@ -113,11 +115,15 @@ struct CalendarView: View {
         selectedDate = nil
     }
 
+    private static let monthFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM"
+        return f
+    }()
+
     private func monthLabel() -> String {
-        let formatter = DateFormatter()
-        formatter.calendar = calendar
-        formatter.dateFormat = "MMMM"
-        return formatter.string(from: displayedMonth).uppercased()
+        Self.monthFormatter.calendar = calendar
+        return Self.monthFormatter.string(from: displayedMonth).uppercased()
     }
 
     private func dateFor(day: Int) -> Date {

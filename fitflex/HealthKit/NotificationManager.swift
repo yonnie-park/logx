@@ -14,9 +14,13 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             try await UNUserNotificationCenter.current().requestAuthorization(
                 options: [.alert, .sound, .badge]
             )
+            #if DEBUG
             print("✅ 알림 권한 획득")
+            #endif
         } catch {
+            #if DEBUG
             print("❌ Notification 권한 에러: \(error)")
+            #endif
         }
     }
 
@@ -36,9 +40,13 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
         do {
             try await UNUserNotificationCenter.current().add(request)
+            #if DEBUG
             print("✅ 알림 발송: \(type)")
+            #endif
         } catch {
+            #if DEBUG
             print("❌ 알림 에러: \(error)")
+            #endif
         }
     }
 

@@ -29,10 +29,14 @@ struct WrappedStats {
     
     let month: Date  // 추가
 
+    private static let monthFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM"
+        return f
+    }()
+
     private var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        return formatter.string(from: month).uppercased()
+        Self.monthFormatter.string(from: month).uppercased()
     }
     var motivationalTitle: (prefix: String, highlight: String, suffix: String) {
         let sessions = totalSessions
