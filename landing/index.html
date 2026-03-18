@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log X - Your Workout, Visualized</title>
+    <style>
+        @font-face {
+            font-family: 'A2Z';
+            src: url('A2Z-4Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        @font-face {
+            font-family: 'A2Z';
+            src: url('A2Z-7Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'A2Z', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #DBD7D4;
+            color: #000000;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            padding: 32px 48px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Month ticker */
+        .ticker-wrapper {
+            width: 100%;
+            overflow: hidden;
+            padding: 12px 0;
+        }
+
+
+        .ticker {
+            display: flex;
+            gap: 12px;
+            animation: scroll 40s linear infinite;
+            width: max-content;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            background: #E32A28;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 48px 24px 56px;
+        }
+
+        .hero h1 {
+            font-size: 24px;
+            font-weight: 400;
+            color: #000000;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 24px;
+            max-width: 1100px;
+            margin: 0 auto 80px;
+            flex-wrap: wrap;
+        }
+
+        .phone-frame {
+            width: 220px;
+            flex-shrink: 0;
+        }
+
+        .phone-frame img {
+            width: 100%;
+            border-radius: 28px;
+            display: block;
+        }
+
+        .phone-frame .placeholder {
+            width: 100%;
+            aspect-ratio: 9 / 19.5;
+            border-radius: 28px;
+            border: 6px solid #1a1a1a;
+            background: #E4E0DD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666666;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .screenshots { gap: 12px; }
+            .phone-frame { width: 160px; }
+        }
+
+        @media (max-width: 480px) {
+            .screenshots {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 0 24px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .screenshots::-webkit-scrollbar { display: none; }
+            .phone-frame { width: 200px; }
+            header { padding: 24px; }
+            .bottom { padding: 48px 24px; }
+            .privacy-section { padding: 0 24px 48px; }
+        }
+
+        /* Bottom section */
+        .bottom {
+            background: #1a1a1a;
+            padding: 64px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+
+        .bottom-left {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .bottom-left h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .bottom-left p {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .bottom-left a {
+            color: #E32A28;
+            text-decoration: none;
+        }
+
+        .bottom-left a:hover { text-decoration: underline; }
+
+        .bottom-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .blob-icon {
+            width: 120px;
+            height: 120px;
+        }
+
+        .blob-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Privacy section */
+        .privacy-section {
+            background: #1a1a1a;
+            padding: 0 48px 48px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .privacy-section h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            padding-top: 32px;
+        }
+
+        .privacy-section p {
+            font-size: 12px;
+            color: #666666;
+            line-height: 1.8;
+            max-width: 700px;
+            font-weight: 400;
+        }
+
+        .privacy-section a {
+            color: #E32A28;
+            text-decoration: none;
+        }
+
+        footer {
+            background: #1a1a1a;
+            text-align: center;
+            padding: 24px;
+            color: #444;
+            font-size: 12px;
+            font-weight: 400;
+            border-top: 1px solid #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with logo -->
+    <header>
+        <div class="logo-icon">
+            <img src="Group 32.png" alt="Log X">
+        </div>
+    </header>
+
+    <!-- Scrolling month ticker -->
+    <div class="ticker-wrapper">
+        <div class="ticker" id="ticker"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Log your fitness life with Log X</h1>
+    </div>
+
+    <!-- Phone screenshots -->
+    <div class="screenshots">
+        <div class="phone-frame"><img src="cbf7dcd757ab68db (1).png" alt="Calendar view"></div>
+        <div class="phone-frame"><img src="cbf7dcd757ab68db.png" alt="Monthly Wrapped"></div>
+        <div class="phone-frame"><img src="cbf7dcd757ab68db (2).png" alt="Workout detail"></div>
+        <div class="phone-frame"><img src="cbf7dcd757ab68db (3).png" alt="Share card"></div>
+    </div>
+
+    <!-- Bottom section -->
+    <div class="bottom">
+        <div class="bottom-left">
+            <h2>Having issues or have a question?</h2>
+            <p>Reach out at <a href="mailto:logxfitness@gmail.com">logxfitness@gmail.com</a></p>
+        </div>
+        <div class="bottom-right">
+            <div class="blob-icon">
+                <img src="Group 29.png" alt="Log X">
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy -->
+    <div id="privacy" class="privacy-section">
+        <h3>Privacy Policy</h3>
+        <p>
+            Log X reads your workout data from Apple Health (HealthKit) to display your fitness history, statistics, and summaries.
+            This data is processed entirely on your device.
+            We do not collect, store, or transmit any personal data, health data, or usage analytics to external servers.
+            There are no user accounts, no third-party SDKs, and no tracking of any kind.
+            Photos accessed through the camera or photo library are used solely for creating workout share cards and are never uploaded or stored outside your device.
+            Notifications are delivered locally on your device when a new workout is recorded in Apple Health.
+            If you have any questions, contact us at <a href="mailto:logxfitness@gmail.com">logxfitness@gmail.com</a>.
+        </p>
+    </div>
+
+    <div id="support"></div>
+
+    <footer>
+        &copy; 2026 Log X. All rights reserved.
+    </footer>
+
+    <script>
+        const ticker = document.getElementById('ticker');
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        const months = [];
+        let year = 2026;
+        let month = 0;
+        for (let i = 0; i < 24; i++) {
+            months.push(`${monthNames[month]} ${year}`);
+            month--;
+            if (month < 0) {
+                month = 11;
+                year--;
+            }
+        }
+
+        const allMonths = [...months, ...months];
+        ticker.innerHTML = allMonths
+            .map(m => `<div class="ticker-item">${m}</div>`)
+            .join('');
+    </script>
+
+</body>
+</html>
