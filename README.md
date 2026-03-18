@@ -5,10 +5,10 @@
 Log X is an iOS fitness tracking app that reads your workout data from Apple Health and turns it into beautiful visualizations, statistics, and shareable summaries.
 
 <p align="center">
-  <img src="landing/Frame 1.png" width="200" />
-  <img src="landing/Frame 2.png" width="200" />
-  <img src="landing/Frame 3.png" width="200" />
-  <img src="landing/Frame 4.png" width="200" />
+  <img src="landing/Frame%201.png" width="200" />
+  <img src="landing/Frame%202.png" width="200" />
+  <img src="landing/Frame%203.png" width="200" />
+  <img src="landing/Frame%204.png" width="200" />
 </p>
 
 ## Features
