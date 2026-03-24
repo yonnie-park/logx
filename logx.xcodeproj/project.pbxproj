@@ -6,6 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0955A00C2F68000000575A41 /* LogXWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0955A0012F68000000575A41 /* LogXWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0955A00D2F68000000575A41 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095510D02F67B8D100575A41 /* WidgetKit.framework */; };
+		0955A00E2F68000000575A41 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095510D22F67B8D100575A41 /* SwiftUI.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0955A00B2F68000000575A41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09550FDB2F62B34100575A41 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0955A0032F68000000575A41;
+			remoteInfo = LogXWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		095510E52F67B8D200575A41 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -13,6 +29,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				0955A00C2F68000000575A41 /* LogXWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -23,9 +40,17 @@
 		09550FE32F62B34100575A41 /* Log X.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Log X.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		095510D02F67B8D100575A41 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		095510D22F67B8D100575A41 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		0955A0012F68000000575A41 /* LogXWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LogXWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0955A00F2F68000000575A41 /* Exceptions for "LogXWidget" folder in "LogXWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0955A0032F68000000575A41 /* LogXWidgetExtension */;
+		};
 		096FA10F2F67D85700D59DC1 /* Exceptions for "logx" folder in "Log X" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -44,6 +69,14 @@
 			path = logx;
 			sourceTree = "<group>";
 		};
+		0955A0022F68000000575A41 /* LogXWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0955A00F2F68000000575A41 /* Exceptions for "LogXWidget" folder in "LogXWidgetExtension" target */,
+			);
+			path = LogXWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +87,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0955A0052F68000000575A41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0955A00D2F68000000575A41 /* WidgetKit.framework in Frameworks */,
+				0955A00E2F68000000575A41 /* SwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				09550FE52F62B34100575A41 /* logx */,
+				0955A0022F68000000575A41 /* LogXWidget */,
 				095510CF2F67B8D100575A41 /* Frameworks */,
 				09550FE42F62B34100575A41 /* Products */,
 			);
@@ -70,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				09550FE32F62B34100575A41 /* Log X.app */,
+				0955A0012F68000000575A41 /* LogXWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +142,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0955A00A2F68000000575A41 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				09550FE52F62B34100575A41 /* logx */,
@@ -108,6 +153,28 @@
 			productName = logx;
 			productReference = 09550FE32F62B34100575A41 /* Log X.app */;
 			productType = "com.apple.product-type.application";
+		};
+		0955A0032F68000000575A41 /* LogXWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0955A0092F68000000575A41 /* Build configuration list for PBXNativeTarget "LogXWidgetExtension" */;
+			buildPhases = (
+				0955A0042F68000000575A41 /* Sources */,
+				0955A0052F68000000575A41 /* Frameworks */,
+				0955A0062F68000000575A41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0955A0022F68000000575A41 /* LogXWidget */,
+			);
+			name = LogXWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = LogXWidgetExtension;
+			productReference = 0955A0012F68000000575A41 /* LogXWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -120,6 +187,9 @@
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					09550FE22F62B34100575A41 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					0955A0032F68000000575A41 = {
 						CreatedOnToolsVersion = 26.3;
 					};
 				};
@@ -140,12 +210,20 @@
 			projectRoot = "";
 			targets = (
 				09550FE22F62B34100575A41 /* Log X */,
+				0955A0032F68000000575A41 /* LogXWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		09550FE12F62B34100575A41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0955A0062F68000000575A41 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -162,7 +240,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0955A0042F68000000575A41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0955A00A2F68000000575A41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0955A0032F68000000575A41 /* LogXWidgetExtension */;
+			targetProxy = 0955A00B2F68000000575A41 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		09550FEC2F62B34200575A41 /* Debug */ = {
@@ -304,8 +397,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -341,8 +434,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -355,6 +448,64 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		0955A0072F68000000575A41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LogXWidget/LogXWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4QFVXJR8B9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LogXWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = LogXWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jessie.logx.LogXWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		0955A0082F68000000575A41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LogXWidget/LogXWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4QFVXJR8B9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LogXWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = LogXWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jessie.logx.LogXWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -377,6 +528,15 @@
 			buildConfigurations = (
 				09550FEF2F62B34200575A41 /* Debug */,
 				09550FF02F62B34200575A41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0955A0092F68000000575A41 /* Build configuration list for PBXNativeTarget "LogXWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0955A0072F68000000575A41 /* Debug */,
+				0955A0082F68000000575A41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
