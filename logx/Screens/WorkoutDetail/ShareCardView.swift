@@ -3,12 +3,20 @@ import SwiftUI
 struct ShareCardView: View {
     let workout: WorkoutModel
     @State private var selectedImage: UIImage? = nil
+    @State private var pickedImage: UIImage? = nil
+    @State private var cropTarget: CropTarget? = nil
+    @State private var format: CardFormat = .post
     @State private var showImagePicker = false
     @State private var showCamera = false
     @State private var showShareSheet = false
     @State private var renderedCard: UIImage? = nil
     @State private var showSavedAlert = false
     @Environment(\.dismiss) var dismiss
+
+    struct CropTarget: Identifiable {
+        let id = UUID()
+        let image: UIImage
+    }
 
     var body: some View {
         ZStack {
@@ -22,9 +30,50 @@ struct ShareCardView: View {
                     .frame(width: 36, height: 4)
                     .padding(.top, 12)
 
-                // Card preview
-                WorkoutCardView(workout: workout, backgroundImage: selectedImage)
-                    .padding(.horizontal, 24)
+                // Format toggle
+                HStack(spacing: 6) {
+                    ForEach(CardFormat.allCases) { f in
+                        Button {
+                            if format != f {
+                                format = f
+                                selectedImage = nil
+                            }
+                        } label: {
+                            Text(f.label)
+                                .font(.a2zBold(size: 13))
+                                .foregroundColor(format == f ? .fitBg : .fitWhite.opacity(0.7))
+                                .padding(.horizontal, 22)
+                                .padding(.vertical, 10)
+                                .background(
+                                    Capsule().fill(format == f ? Color.fitWhite : Color.clear)
+                                )
+                        }
+                    }
+                }
+                .padding(4)
+                .background(
+                    Capsule().fill(Color.fitBgBtn)
+                )
+                .overlay(
+                    Capsule().stroke(Color.fitWhite.opacity(0.15), lineWidth: 1)
+                )
+
+                // Card preview (scaled to fit available space)
+                GeometryReader { geo in
+                    WorkoutCardView(
+                        workout: workout,
+                        backgroundImage: selectedImage,
+                        format: format
+                    )
+                    .scaleEffect(
+                        min(
+                            (geo.size.width - 48) / (UIScreen.main.bounds.width - 48),
+                            geo.size.height / ((UIScreen.main.bounds.width - 48) / format.aspectRatio)
+                        ),
+                        anchor: .center
+                    )
+                    .frame(width: geo.size.width, height: geo.size.height)
+                }
 
                 // Gallery / Camera buttons
                 HStack(spacing: 10) {
@@ -83,12 +132,25 @@ struct ShareCardView: View {
                             }
                         }
         
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $selectedImage, sourceType: .photoLibrary)
+        .sheet(isPresented: $showImagePicker, onDismiss: handlePickerDismiss) {
+            ImagePicker(image: $pickedImage, sourceType: .photoLibrary)
         }
-        .sheet(isPresented: $showCamera) {
-            ImagePicker(image: $selectedImage, sourceType: .camera)
-                .ignoresSafeArea()  // 추가
+        .sheet(isPresented: $showCamera, onDismiss: handlePickerDismiss) {
+            ImagePicker(image: $pickedImage, sourceType: .camera)
+                .ignoresSafeArea()
+        }
+        .fullScreenCover(item: $cropTarget) { target in
+            ImageCropView(
+                image: target.image,
+                aspectRatio: format.aspectRatio,
+                onCrop: { cropped in
+                    selectedImage = cropped
+                    cropTarget = nil
+                },
+                onCancel: {
+                    cropTarget = nil
+                }
+            )
         }
         .sheet(isPresented: $showShareSheet) {
             if let img = renderedCard {
@@ -102,12 +164,22 @@ struct ShareCardView: View {
         }
     }
 
+    private func handlePickerDismiss() {
+        guard let img = pickedImage else { return }
+        pickedImage = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            cropTarget = CropTarget(image: img)
+        }
+    }
+
     @MainActor
     private func renderAndSave() {
         let transparentCard = WorkoutCardView(
             workout: workout,
             backgroundImage: selectedImage,
-            isTransparent: selectedImage == nil
+            isTransparent: selectedImage == nil,
+            roundedCorners: false,
+            format: format
         )
         ShareManager.saveToPhotos(view: transparentCard, transparent: selectedImage == nil) { success in
             if success { showSavedAlert = true }

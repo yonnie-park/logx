@@ -1,9 +1,32 @@
 import SwiftUI
 
+enum CardFormat: String, CaseIterable, Identifiable {
+    case post, story
+
+    var id: String { rawValue }
+    var aspectRatio: CGFloat {
+        switch self {
+        case .post:  return 1.0 / 1.4
+        case .story: return 9.0 / 16.0
+        }
+    }
+    var label: String {
+        switch self {
+        case .post:  return "post"
+        case .story: return "story"
+        }
+    }
+}
+
 struct WorkoutCardView: View {
     let workout: WorkoutModel
     var backgroundImage: UIImage? = nil
     var isTransparent: Bool = false
+    var roundedCorners: Bool = true
+    var format: CardFormat = .post
+
+    private var cardWidth: CGFloat { UIScreen.main.bounds.width - 48 }
+    private var cardHeight: CGFloat { cardWidth / format.aspectRatio }
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -13,10 +36,7 @@ struct WorkoutCardView: View {
                 Image(uiImage: img)
                     .resizable()
                     .scaledToFill()
-                    .frame(
-                        width: UIScreen.main.bounds.width - 48,
-                        height: (UIScreen.main.bounds.width - 48) * 1.4
-                    )
+                    .frame(width: cardWidth, height: cardHeight)
                     .clipped()
 
                 LinearGradient(
@@ -28,6 +48,15 @@ struct WorkoutCardView: View {
                 Color.fitBg
             }
 
+            // Logo pinned to bottom-right
+            Image("TextLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 12)
+                .opacity(0.85)
+                .padding(20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+
             // Content pinned to bottom
             VStack(alignment: .leading, spacing: 0) {
 
@@ -38,29 +67,39 @@ struct WorkoutCardView: View {
                         lineColor: .fitRed,
                         lineWidth: 1.5
                     )
-                    .frame(height: 80)
+                    .frame(height: 64)
                 }
+
+                // Workout icon
+                Image(systemName: workoutIconName(for: workout.type))
+                    .font(.system(size: 22))
+                    .foregroundColor(.fitWhite)
+                    .padding(.bottom, 6)
 
                 // Workout name + date
                 Text(LocalizedStringKey(workout.type))
-                    .font(.a2zBold(size: 32))
+                    .font(.a2zBold(size: 26))
                     .foregroundColor(.fitWhite)
+                    .frame(maxWidth: .infinity, minHeight: 38, alignment: .topLeading)
+                    .padding(.bottom, 2)
 
                 Text(workout.formattedDate)
-                    .font(.system(size: 13))
+                    .font(.system(size: 11))
                     .foregroundColor(.fitWhite.opacity(0.5))
-                    .padding(.top, 4)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 14)
 
                 // Stats
-                HStack(spacing: 28) {
+                HStack(spacing: 20) {
                     StatBlock(value: workout.formattedDuration, label: "duration")
+                    if let pace = workout.formattedPace {
+                        StatBlock(value: pace, label: "pace /km")
+                    }
                     StatBlock(value: "\(workout.activeKcal)", label: "kcal")
                     if let avg = workout.averageHeartRate {
                         StatBlock(value: "\(avg)", label: "bpm")
                     }
                 }
-                .padding(.bottom, 16)
+                .padding(.bottom, 12)
 
                 // Heart rate line
                 if !workout.heartRateSamples.isEmpty{
@@ -68,16 +107,15 @@ struct WorkoutCardView: View {
                         samples: workout.heartRateSamples,
                         workoutStart: workout.date
                     )
-                    .frame(height: 50)
+                    .frame(height: 40)
                 }
             }
-            .padding(28)
+            .padding(.horizontal, 22)
+            .padding(.top, 22)
+            .padding(.bottom, 68)
         }
-        .frame(
-            width: UIScreen.main.bounds.width - 48,
-            height: (UIScreen.main.bounds.width - 48) * 1.4
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .frame(width: cardWidth, height: cardHeight)
+        .clipShape(RoundedRectangle(cornerRadius: roundedCorners ? 20 : 0))
     }
 }
 

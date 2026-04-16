@@ -79,24 +79,30 @@ struct CalendarView: View {
             }
 
             LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(1...daysInMonth, id: \.self) { day in
-                    let hasWorkout = workoutDayTypes[day] != nil
-                    DayCell(
-                        day: day,
-                        hasWorkout: hasWorkout,
-                        isSelected: isSelected(day: day),
-                        isToday: isToday(day: day),
-                        workoutType: workoutDayTypes[day]
-                    )
-                    .onTapGesture {
-                        guard hasWorkout else { return }  // 기록 없으면 클릭 막기
-                        if isSelected(day: day) {
-                            selectedDate = nil
-                        } else {
-                            selectedDate = dateFor(day: day)
+                ForEach(0..<(firstWeekdayOffset + daysInMonth), id: \.self) { idx in
+                    if idx < firstWeekdayOffset {
+                        Color.clear
+                            .frame(maxWidth: .infinity, minHeight: 40)
+                    } else {
+                        let day = idx - firstWeekdayOffset + 1
+                        let hasWorkout = workoutDayTypes[day] != nil
+                        DayCell(
+                            day: day,
+                            hasWorkout: hasWorkout,
+                            isSelected: isSelected(day: day),
+                            isToday: isToday(day: day),
+                            workoutType: workoutDayTypes[day]
+                        )
+                        .onTapGesture {
+                            guard hasWorkout else { return }
+                            if isSelected(day: day) {
+                                selectedDate = nil
+                            } else {
+                                selectedDate = dateFor(day: day)
+                            }
                         }
+                        .opacity(hasWorkout || isToday(day: day) ? 1.0 : 0.3)
                     }
-                    .opacity(hasWorkout || isToday(day: day) ? 1.0 : 0.3)  // 기록 없으면 흐리게
                 }
             }
         }

@@ -38,7 +38,8 @@ struct WorkoutDetailView: View {
                         Text(LocalizedStringKey(displayWorkout.type))
                             .font(.a2zBold(size: 32))
                             .foregroundColor(.fitText)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, minHeight: 48, alignment: .topLeading)
+                            .padding(.bottom, 4)
 
                         Text(displayWorkout.formattedDate)
                             .font(.system(size: 13))

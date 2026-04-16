@@ -49,6 +49,21 @@ struct WorkoutModel: Identifiable {
         return String(format: "%.1fkm", distance / 1000)
     }
 
+    var isRun: Bool {
+        type.lowercased().contains("run")
+    }
+
+    var formattedPace: String? {
+        guard isRun,
+              let distance = distance,
+              distance >= 100,
+              duration > 0 else { return nil }
+        let secondsPerKm = duration / (distance / 1000)
+        let minutes = Int(secondsPerKm) / 60
+        let seconds = Int(secondsPerKm) % 60
+        return String(format: "%d'%02d\"", minutes, seconds)
+    }
+
     static let mock = WorkoutModel(
         id: UUID(),
         type: "outdoor run",
