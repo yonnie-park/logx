@@ -1,6 +1,7 @@
 import Foundation
 import HealthKit
 import CoreLocation
+import WidgetKit
 
 @Observable
 class HealthKitManager {
@@ -20,6 +21,13 @@ class HealthKitManager {
         HKSeriesType.workoutRoute()
     ]
 
+    private let shareTypes: Set<HKSampleType> = [
+        HKObjectType.workoutType(),
+        HKQuantityType(.activeEnergyBurned),
+        HKQuantityType(.distanceWalkingRunning),
+        HKQuantityType(.distanceCycling)
+    ]
+
     func requestAuthorization() async {
         guard HKHealthStore.isHealthDataAvailable() else {
             #if DEBUG
@@ -28,7 +36,7 @@ class HealthKitManager {
             return
         }
         do {
-            try await store.requestAuthorization(toShare: [], read: readTypes)
+            try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
             isAuthorized = true
             #if DEBUG
             print("✅ HealthKit 권한 획득")
@@ -60,6 +68,7 @@ class HealthKitManager {
                 guard let self else { return }
 
                 // 기본 정보만 빠르게 로드 (HR, route 제외) — 병렬 fetch
+                let appBundleId = Bundle.main.bundleIdentifier ?? ""
                 let result = await withTaskGroup(of: WorkoutModel.self, returning: [WorkoutModel].self) { group in
                     for hkWorkout in hkWorkouts {
                         group.addTask {
@@ -74,7 +83,8 @@ class HealthKitManager {
                                 totalKcal: totalKcal,
                                 distance: hkWorkout.totalDistance?.doubleValue(for: .meter()),
                                 heartRateSamples: [],
-                                routeCoordinates: []
+                                routeCoordinates: [],
+                                isManual: hkWorkout.sourceRevision.source.bundleIdentifier == appBundleId
                             )
                         }
                     }
@@ -84,6 +94,9 @@ class HealthKitManager {
                     }
                     return models.sorted { $0.date > $1.date }
                 }
+
+                SharedDataManager.save(workouts: result)
+                WidgetCenter.shared.reloadAllTimelines()
 
                 await MainActor.run {
                     self.workouts = result
@@ -95,6 +108,73 @@ class HealthKitManager {
             }
         }
         store.execute(query)
+    }
+
+    func saveManualWorkout(
+        activityType: HKWorkoutActivityType,
+        start: Date,
+        duration: TimeInterval,
+        activeKcal: Int,
+        distanceMeters: Double?
+    ) async throws -> WorkoutModel {
+        let end = start.addingTimeInterval(duration)
+
+        let config = HKWorkoutConfiguration()
+        config.activityType = activityType
+        if activityType == .running || activityType == .walking || activityType == .hiking {
+            config.locationType = .outdoor
+        }
+
+        let builder = HKWorkoutBuilder(healthStore: store, configuration: config, device: .local())
+
+        try await builder.beginCollection(at: start)
+
+        var samples: [HKSample] = []
+
+        if activeKcal > 0 {
+            let energySample = HKCumulativeQuantitySample(
+                type: HKQuantityType(.activeEnergyBurned),
+                quantity: HKQuantity(unit: .kilocalorie(), doubleValue: Double(activeKcal)),
+                start: start,
+                end: end
+            )
+            samples.append(energySample)
+        }
+
+        if let distanceMeters, distanceMeters > 0 {
+            let distanceType: HKQuantityType = activityType == .cycling
+                ? HKQuantityType(.distanceCycling)
+                : HKQuantityType(.distanceWalkingRunning)
+            let distanceSample = HKCumulativeQuantitySample(
+                type: distanceType,
+                quantity: HKQuantity(unit: .meter(), doubleValue: distanceMeters),
+                start: start,
+                end: end
+            )
+            samples.append(distanceSample)
+        }
+
+        if !samples.isEmpty {
+            try await builder.addSamples(samples)
+        }
+
+        try await builder.endCollection(at: end)
+        let hkWorkout = try await builder.finishWorkout()
+
+        await fetchWorkouts()
+
+        guard let hkWorkout else {
+            throw NSError(domain: "LogX", code: -1, userInfo: [NSLocalizedDescriptionKey: "failed to finalize workout"])
+        }
+        return await makeWorkoutModel(from: hkWorkout)
+    }
+
+    func deleteWorkout(_ workout: WorkoutModel) async throws {
+        guard let hkWorkout = await fetchHKWorkout(id: workout.id) else {
+            throw NSError(domain: "LogX", code: -2, userInfo: [NSLocalizedDescriptionKey: "workout not found"])
+        }
+        try await store.delete(hkWorkout)
+        await fetchWorkouts()
     }
 
     func makeWorkoutModel(from workout: WorkoutModel) async -> WorkoutModel {
@@ -123,6 +203,7 @@ class HealthKitManager {
         let heartRateSamples = await fetchHeartRate(for: hkWorkout)
         let routeCoordinates = await fetchRoute(for: hkWorkout)
 
+        let appBundleId = Bundle.main.bundleIdentifier ?? ""
         return WorkoutModel(
             id: hkWorkout.uuid,
             type: hkWorkout.workoutActivityType.name,
@@ -132,7 +213,8 @@ class HealthKitManager {
             totalKcal: totalKcal,
             distance: hkWorkout.totalDistance?.doubleValue(for: .meter()),
             heartRateSamples: heartRateSamples,
-            routeCoordinates: routeCoordinates
+            routeCoordinates: routeCoordinates,
+            isManual: hkWorkout.sourceRevision.source.bundleIdentifier == appBundleId
         )
 
     }

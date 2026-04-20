@@ -4,6 +4,9 @@ struct MainView: View {
     @Environment(HealthKitManager.self) private var healthKitManager
     @Environment(\.colorScheme) var colorScheme
     @State private var selectedDate: Date? = nil
+    @State private var showingManualEntry = false
+    @State private var pendingDetailWorkout: WorkoutModel?
+    @State private var navigateToDetail: WorkoutModel?
 
     
     private var workouts: [WorkoutModel] {
@@ -39,14 +42,29 @@ struct MainView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Logo
-                Image("Logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 32)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 8)
-                    .accessibilityLabel("Log X logo")
+                // Logo + add button
+                HStack {
+                    Image("Logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 32)
+                        .accessibilityLabel("Log X logo")
+
+                    Spacer()
+
+                    Button {
+                        showingManualEntry = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.fitText)
+                            .frame(width: 36, height: 36)
+                            .background(Circle().fill(Color.fitBgBtn))
+                    }
+                    .accessibilityIdentifier("add-workout")
+                    .accessibilityLabel("add workout")
+                }
+                .padding(.top, 8)
                 
                 // Wrapped chips
                 if !availableMonths.isEmpty {
@@ -94,7 +112,9 @@ struct MainView: View {
 
                     VStack(spacing: 10) {
                         ForEach(workoutsForSelectedDate) { workout in
-                            RecentWorkoutRow(workout: workout)
+                            RecentWorkoutRow(workout: workout) {
+                                delete(workout)
+                            }
                         }
                     }
                 }
@@ -120,7 +140,9 @@ struct MainView: View {
                 } else {
                     LazyVStack(spacing: 10) {
                         ForEach(workouts) { workout in
-                            RecentWorkoutRow(workout: workout)
+                            RecentWorkoutRow(workout: workout) {
+                                delete(workout)
+                            }
                         }
                     }
                 }
@@ -131,12 +153,31 @@ struct MainView: View {
         }
         .background(Color.fitBg)
         .scrollIndicators(.hidden)
+        .sheet(isPresented: $showingManualEntry, onDismiss: {
+            if let workout = pendingDetailWorkout {
+                pendingDetailWorkout = nil
+                navigateToDetail = workout
+            }
+        }) {
+            ManualWorkoutEntryView { created in
+                pendingDetailWorkout = created
+            }
+        }
+        .navigationDestination(item: $navigateToDetail) { workout in
+            WorkoutDetailView(workout: workout)
+        }
     }
 
     private func workoutsFor(month: Date) -> [WorkoutModel] {
         let calendar = Calendar.current
         return workouts.filter {
             calendar.isDate($0.date, equalTo: month, toGranularity: .month)
+        }
+    }
+
+    private func delete(_ workout: WorkoutModel) {
+        Task {
+            try? await healthKitManager.deleteWorkout(workout)
         }
     }
 }

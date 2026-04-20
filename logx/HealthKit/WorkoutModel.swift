@@ -2,7 +2,7 @@ import Foundation
 import HealthKit
 import CoreLocation
 
-struct WorkoutModel: Identifiable {
+struct WorkoutModel: Identifiable, Hashable {
     let id: UUID
     let type: String
     let date: Date
@@ -12,6 +12,15 @@ struct WorkoutModel: Identifiable {
     let distance: Double?
     let heartRateSamples: [HeartRateSample]
     let routeCoordinates: [CLLocationCoordinate2D]
+    let isManual: Bool
+
+    static func == (lhs: WorkoutModel, rhs: WorkoutModel) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 
     var averageHeartRate: Int? {
         guard !heartRateSamples.isEmpty else { return nil }
@@ -73,14 +82,15 @@ struct WorkoutModel: Identifiable {
         totalKcal: 321,
         distance: 5200,
         heartRateSamples: HeartRateSample.mockSamples,
-        routeCoordinates: CLLocationCoordinate2D.mockRoute
+        routeCoordinates: CLLocationCoordinate2D.mockRoute,
+        isManual: false
     )
 
     static let mockList: [WorkoutModel] = [
-        WorkoutModel(id: UUID(), type: "outdoor run", date: Date(), duration: 3600, activeKcal: 290, totalKcal: 321, distance: 5200, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: CLLocationCoordinate2D.mockRoute),
-        WorkoutModel(id: UUID(), type: "barre", date: Date().addingTimeInterval(-86400), duration: 2700, activeKcal: 185, totalKcal: 210, distance: nil, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: []),
-        WorkoutModel(id: UUID(), type: "hiit", date: Date().addingTimeInterval(-172800), duration: 1800, activeKcal: 255, totalKcal: 280, distance: nil, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: []),
-        WorkoutModel(id: UUID(), type: "cycling", date: Date().addingTimeInterval(-259200), duration: 4500, activeKcal: 350, totalKcal: 390, distance: 18000, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: []),
+        WorkoutModel(id: UUID(), type: "outdoor run", date: Date(), duration: 3600, activeKcal: 290, totalKcal: 321, distance: 5200, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: CLLocationCoordinate2D.mockRoute, isManual: false),
+        WorkoutModel(id: UUID(), type: "barre", date: Date().addingTimeInterval(-86400), duration: 2700, activeKcal: 185, totalKcal: 210, distance: nil, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: [], isManual: true),
+        WorkoutModel(id: UUID(), type: "hiit", date: Date().addingTimeInterval(-172800), duration: 1800, activeKcal: 255, totalKcal: 280, distance: nil, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: [], isManual: false),
+        WorkoutModel(id: UUID(), type: "cycling", date: Date().addingTimeInterval(-259200), duration: 4500, activeKcal: 350, totalKcal: 390, distance: 18000, heartRateSamples: HeartRateSample.mockSamples, routeCoordinates: [], isManual: false),
     ]
 }
 
